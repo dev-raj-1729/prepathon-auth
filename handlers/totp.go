@@ -59,12 +59,12 @@ func (h *Handler) Verify2FA(c *fiber.Ctx) error {
 	user, err := controllers.FindUserByEmail(h.MongoClient, claims.Email)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("error fetching User : %s", err)
 	}
 
 	totpSecret, err := controllers.FindSecretByUserId(h.MongoClient, user.ID)
 	if err != nil {
-		return err
+		return fmt.Errorf("error fetching Secret : %s", err)
 	}
 	isValid := totp.Validate(totpToken, totpSecret.Secret)
 	fmt.Println(totp.GenerateCode(totpSecret.Secret, time.Now()))
@@ -74,8 +74,8 @@ func (h *Handler) Verify2FA(c *fiber.Ctx) error {
 
 	expirationTime := time.Now().Add(time.Hour * 24 * 30)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     expirationTime.Unix(),
+		"app_user": user,
+		"exp":      expirationTime.Unix(),
 	})
 	jwtKey := utils.GetJWT_Key()
 	tokenString, err := token.SignedString([]byte(jwtKey))
