@@ -17,8 +17,9 @@ func (h *Handler) CreateUserWithFirebaseToken(c *fiber.Ctx) error {
 		return err
 	}
 	user := models.User{
-		Email:            claims.Email,
-		TwoFactorEnabled: false,
+		Email:    claims.Email,
+		Name:     claims.Name,
+		PhotoURL: claims.Picture,
 	}
 	if err := controllers.CreateUser(h.MongoClient, &user); err != nil {
 		return err

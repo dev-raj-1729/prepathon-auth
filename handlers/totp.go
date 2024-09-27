@@ -36,6 +36,7 @@ func (h *Handler) Enable2FA(c *fiber.Ctx) error {
 		return err
 	}
 
+	// TODO encrypt secret
 	if err := controllers.CreateSecret(h.MongoClient, key.Secret(), user.ID); err != nil {
 		return err
 	}
