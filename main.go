@@ -53,5 +53,13 @@ func main() {
 	app.Post("enable_2fa", handler.Enable2FA)
 	app.Get("/verify_2fa", handler.Verify2FA)
 
-	app.Listen("localhost:8080")
+	port := os.Getenv("PORT")
+	port = ":" + port
+	app_env := os.Getenv("APP_ENV")
+	if app_env == "dev" {
+		// only listen on localhost for development
+		app.Listen("localhost" + port)
+	} else {
+		app.Listen(port)
+	}
 }
